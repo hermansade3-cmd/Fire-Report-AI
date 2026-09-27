@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Offline Incident &amp; Rescue Report</title>
+<meta name="description" content="Offline-first incident and rescue reporting application. Created by Herman Sade.">
+<meta name="theme-color" content="#0e1420">
+<link rel="icon" href="data:image/png;base64,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">
+<link rel="apple-touch-icon" href="data:image/png;base64,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">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Rescue Report">
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="style.css?v=3">
+</head>
+<body>
+<div id="app">
+  <noscript>Programu hii inahitaji JavaScript kufanya kazi.</noscript>
+  <div id="boot-msg" style="padding:24px;font-family:sans-serif;color:#9aa4b2;text-align:center;">Inapakia programu…</div>
+</div>
+<script src="core.js?v=5"></script>
+<script src="script.js?v=6"></script>
+<script src="sync.js?v=1"></script>
+<script src="announcements.js?v=3"></script>
+<script src="incident-ai.js?v=1"></script>
+<script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("sw.js").catch((err) => {
+        console.warn("Service worker haikusajiliwa:", err);
+      });
+    });
+  }
+</script>
+</body>
+</html>
