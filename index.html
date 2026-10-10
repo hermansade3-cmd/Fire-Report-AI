@@ -2,317 +2,95 @@
 <html lang="sw">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>R-AI TRINITY</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>R-AI Trinity</title>
 <style>
-:root{--bg:#0b0f1a;--p:#121829;--t:#e8ecf6;--m:#8a94ad;--b:#232b42;--sade:#a78bfa;--fire:#fb923c;--search:#38bdf8;--ok:#34d399;--err:#f87171}
-:root[data-theme=light]{--bg:#f4f6fb;--p:#fff;--t:#161b2e;--m:#5c667f;--b:#dde2ef}
+:root{--bg:#0f1420;--card:#18202f;--txt:#e8ecf4;--mut:#8a96ad;--sade:#3b82f6;--fire:#f97316;--search:#22c55e;--bd:#26304a}
+@media (prefers-color-scheme:light){:root{--bg:#f3f5fa;--card:#fff;--txt:#141a29;--mut:#5b667d;--bd:#dde3ef}}
+:root[data-theme=dark]{--bg:#0f1420;--card:#18202f;--txt:#e8ecf4;--mut:#8a96ad;--bd:#26304a}
 *{box-sizing:border-box}html,body{height:100%;margin:0}
-body{background:var(--bg);color:var(--t);font:15px/1.55 system-ui,sans-serif;display:flex;flex-direction:column;overflow:hidden}
-header{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--p);border-bottom:1px solid var(--b)}
-.logo{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--sade),var(--fire),var(--search));display:grid;place-items:center;font-weight:800;color:#fff;font-size:13px}
-h1{font-size:15px;margin:0;flex:1;line-height:1.2}h1 small{display:block;font-weight:400;color:var(--m);font-size:11px}
-#st{font-size:11px;padding:3px 9px;border-radius:99px;border:1px solid var(--b);color:var(--m)}
-button{font:inherit;cursor:pointer;border:1px solid var(--b);background:var(--p);color:var(--t);border-radius:10px;padding:6px 10px}
-button:focus-visible,textarea:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--search);outline-offset:1px}
-.pri{background:var(--search);color:#04121c;border:0;font-weight:700}
-.main{flex:1;display:flex;min-height:0}
-aside{width:260px;background:var(--p);border-right:1px solid var(--b);overflow:auto;padding:10px;display:none}
-@media(min-width:900px){aside{display:block}}
-aside h3{font-size:12px;color:var(--m);margin:10px 4px 6px;text-transform:uppercase}
-.hi{display:block;width:100%;text-align:left;margin-bottom:6px;font-size:13px}
-.hi small{display:block;color:var(--m)}
-section{flex:1;display:flex;flex-direction:column;min-width:0;position:relative}
-#who{display:flex;gap:8px;padding:8px 12px;border-bottom:1px solid var(--b);overflow:auto}
-.chip{display:flex;align-items:center;gap:8px;padding:5px 10px;border:1px solid var(--b);border-radius:99px;background:var(--p);white-space:nowrap;font-size:12px}
-.chip i{width:10px;height:10px;border-radius:50%;display:block}
-.chip.on{box-shadow:0 0 0 2px currentColor}
-.chip small{color:var(--m)}
-#feed{flex:1;overflow:auto;padding:14px 12px;scroll-behavior:smooth}
-.msg{display:flex;gap:10px;margin:0 auto 14px;max-width:820px;animation:in .25s}
-@keyframes in{from{opacity:0;transform:translateY(6px)}}
-@media(prefers-reduced-motion:reduce){.msg{animation:none}}
-.av{flex:none;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-weight:800;color:#fff;font-size:13px}
-.bd{background:var(--p);border:1px solid var(--b);border-radius:14px;padding:9px 12px;min-width:0;flex:1}
-.hd{font-size:12px;color:var(--m);margin-bottom:3px}.hd b{color:var(--t)}
-.tag{display:inline-block;font-size:10px;padding:1px 7px;border-radius:99px;margin-left:6px;border:1px solid currentColor}
-.tx{white-space:pre-wrap;overflow-wrap:anywhere}
-.src{margin-top:7px;font-size:12px}.src a{display:block;color:var(--search);overflow-wrap:anywhere;margin:2px 0}
-.me{justify-content:flex-end}.me .bd{flex:none;max-width:85%;background:var(--search);color:#04121c;border:0}
-.typ{color:var(--m);font-style:italic;max-width:820px;margin:0 auto 12px;font-size:13px}
-.typ:after{content:'…';animation:bl 1s infinite}@keyframes bl{50%{opacity:.2}}
-#nm{position:absolute;bottom:92px;left:50%;transform:translateX(-50%);display:none}
-.fin{max-width:820px;margin:0 auto 16px;border:2px solid var(--sade);border-radius:16px;padding:12px 14px;background:var(--p)}
-.fin h2{margin:0 0 6px;font-size:16px;color:var(--sade)}.fin h4{margin:10px 0 3px;font-size:13px;color:var(--m)}
-.fin .row{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
-form{display:flex;gap:8px;padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px));background:var(--p);border-top:1px solid var(--b)}
-textarea{flex:1;resize:none;max-height:120px;font:inherit;background:var(--bg);color:var(--t);border:1px solid var(--b);border-radius:12px;padding:9px 12px}
-dialog{background:var(--p);color:var(--t);border:1px solid var(--b);border-radius:16px;max-width:420px;width:92%}
-dialog label{display:block;margin:10px 0 3px;font-size:13px;color:var(--m)}
-dialog input,dialog select{width:100%;font:inherit;padding:8px;border-radius:8px;border:1px solid var(--b);background:var(--bg);color:var(--t)}
-.note{font-size:12px;color:var(--m);margin-top:8px}
+body{background:var(--bg);color:var(--txt);font:15px/1.5 system-ui,sans-serif;display:flex;flex-direction:column}
+header{padding:10px 12px;border-bottom:1px solid var(--bd);padding-top:max(10px,env(safe-area-inset-top))}
+.team{display:flex;gap:8px;justify-content:center}
+.ai{display:flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:var(--card);border:2px solid var(--bd);font-size:13px;font-weight:600}
+.ai.active{border-color:var(--c)}
+.av{width:26px;height:26px;border-radius:50%;background:var(--c);color:#fff;display:grid;place-items:center;font-size:13px;font-weight:700}
+#status{text-align:center;color:var(--mut);font-size:13px;min-height:20px;margin-top:6px}
+#chat{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px}
+.msg{display:flex;gap:8px;max-width:100%}
+.bub{background:var(--card);border:1px solid var(--bd);border-left:4px solid var(--c);border-radius:10px;padding:8px 10px;min-width:0;flex:1}
+.nm{font-weight:700;font-size:13px;color:var(--c)}.kd{font-size:11px;color:var(--mut);margin-left:6px;font-weight:400}
+.tx{white-space:pre-wrap;word-wrap:break-word;margin-top:2px}
+.err .bub{border-left-color:#ef4444}
+.src{margin-top:6px;font-size:12px;border-top:1px dashed var(--bd);padding-top:6px}
+.src a{color:var(--c);display:block;word-break:break-all}.src small{color:var(--mut)}
+.sade{--c:var(--sade)}.fire{--c:var(--fire)}.search{--c:var(--search)}
+form{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--bd);padding-bottom:max(10px,env(safe-area-inset-bottom));background:var(--bg)}
+input{flex:1;padding:12px;border-radius:10px;border:1px solid var(--bd);background:var(--card);color:var(--txt);font-size:16px}
+button{padding:0 18px;border:0;border-radius:10px;background:var(--sade);color:#fff;font-weight:700;font-size:15px}
+button:disabled{opacity:.5}
 </style>
 </head>
 <body>
 <header>
- <div class="logo">R-AI</div>
- <h1>R-AI TRINITY<small id="sub"></small></h1>
- <span id="st" role="status" aria-live="polite"></span>
- <button id="nw" aria-label="Mjadala mpya">＋</button>
- <button id="hb" aria-label="Historia" style="display:none">☰</button>
- <button id="sb" aria-label="Mipangilio">⚙</button>
+  <div class="team">
+    <div class="ai sade" id="ai-sade"><div class="av">S</div>Sade</div>
+    <div class="ai fire" id="ai-fire"><div class="av">F</div>R-AI Fire</div>
+    <div class="ai search" id="ai-search"><div class="av">R</div>R-AI Search</div>
+  </div>
+  <div id="status"></div>
 </header>
-<div class="main">
- <aside id="side"><h3 id="hT"></h3><div id="hl"></div><button id="clr" class="hi" style="color:var(--err)"></button></aside>
- <section>
-  <div id="who"></div>
-  <div id="feed" aria-live="polite"></div>
-  <button id="nm" class="pri">↓ Ujumbe mpya</button>
-  <form id="f">
-   <textarea id="q" rows="1" aria-label="Swali"></textarea>
-   <button type="button" id="stop" style="display:none">■</button>
-   <button class="pri" id="go">➤</button>
-  </form>
- </section>
-</div>
-<dialog id="dg"><form method="dialog" id="df">
- <h3 style="margin:0 0 4px" id="sT"></h3>
- <label>Tavily API key</label><input id="k" type="password" autocomplete="off" placeholder="tvly-...">
- <label>Backend URL (Worker) — ubongo wa LLM</label><input id="wk" placeholder="https://xxx.workers.dev"><label id="lL"></label><select id="l"><option value="sw">Kiswahili</option><option value="en">English</option></select>
- <label id="tL"></label><select id="th"><option value="dark">Dark</option><option value="light">Light</option></select>
- <label id="dL"></label><select id="dp"><option value="short"></option><option value="deep"></option></select>
- <label>Hali ya huduma</label><div id="svc" class="note" style="margin:0"></div>
- <p class="note" id="sn"></p>
- <div style="display:flex;gap:8px;margin-top:12px"><button class="pri" value="x" id="sv">OK</button></div>
-</form></dialog>
-
+<div id="chat"></div>
+<form id="f"><input id="q" placeholder="Andika swali lako..." autocomplete="off" required><button id="b">Tuma</button></form>
 <script>
-const $=id=>document.getElementById(id);
-const AI={
- sade:{n:'Sade',r:'Lead Intelligence',c:'var(--sade)',a:'S'},
- fire:{n:'R-AI Fire',r:'Technical Expert',c:'var(--fire)',a:'F'},
- search:{n:'R-AI Search',r:'Research Intelligence',c:'var(--search)',a:'R'}
+const NAMES={sade:"Sade",fire:"R-AI Fire",search:"R-AI Search"},INIT={sade:"S",fire:"F",search:"R"};
+const chat=document.getElementById("chat"),st=document.getElementById("status"),btn=document.getElementById("b");
+function el(t,c,x){const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
+function addMsg(m){
+  const w=el("div","msg "+m.ai+(m.error?" err":""));
+  const av=el("div","av",INIT[m.ai]);av.style.cssText="background:var(--c);flex:none;width:30px;height:30px;color:#fff;border-radius:50%;display:grid;place-items:center";
+  const b=el("div","bub"),h=el("div","nm",NAMES[m.ai]);
+  if(m.kind)h.appendChild(el("span","kd",m.kind));
+  b.append(h,el("div","tx",m.text));
+  if(m.sources&&m.sources.length){
+    const s=el("div","src");
+    m.sources.forEach(r=>{
+      if(!/^https?:\/\//.test(r.url))return;
+      const a=el("a",null,r.title||r.url);a.href=r.url;a.target="_blank";a.rel="noopener noreferrer";
+      s.appendChild(a);
+      const meta=[r.score!=null?"score "+r.score.toFixed(2):"",r.date||""].filter(Boolean).join(" · ");
+      if(meta)s.appendChild(el("small",null,meta));
+    });
+    b.appendChild(s);
+  }
+  w.append(av,b);chat.appendChild(w);chat.scrollTop=chat.scrollHeight;
+  document.querySelectorAll(".ai").forEach(a=>a.classList.remove("active"));
+  document.getElementById("ai-"+m.ai).classList.add("active");
+}
+document.getElementById("f").onsubmit=async e=>{
+  e.preventDefault();
+  const q=document.getElementById("q");const question=q.value.trim();if(!question)return;
+  q.value="";btn.disabled=true;
+  const me=el("div","msg");const mb=el("div","bub",null);mb.style.setProperty("--c","var(--mut)");
+  mb.append(el("div","nm","Wewe"),el("div","tx",question));me.appendChild(mb);chat.appendChild(me);
+  try{
+    const r=await fetch("/api/debate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({question})});
+    if(!r.ok||!r.body)throw new Error(await r.text());
+    const rd=r.body.getReader(),dec=new TextDecoder();let buf="";
+    for(;;){
+      const {value,done}=await rd.read();if(done)break;
+      buf+=dec.decode(value,{stream:true});
+      let i;while((i=buf.indexOf("\n\n"))>=0){
+        const blk=buf.slice(0,i);buf=buf.slice(i+2);
+        const ev=(blk.match(/^event: (.*)$/m)||[])[1],d=(blk.match(/^data: (.*)$/m)||[])[1];
+        if(!ev||!d)continue;const data=JSON.parse(d);
+        if(ev==="status")st.textContent=data.text;
+        else if(ev==="message")addMsg(data);
+      }
+    }
+  }catch(err){addMsg({ai:"sade",kind:"Hitilafu",text:"Imeshindwa kuunganisha: "+err.message,error:true})}
+  btn.disabled=false;
 };
-const T={sw:{sub:'Mjadala wa AI tatu • Tavily',ph:'Andika swali lako…',idle:'Tayari',analyzing:'Inachambua',debating:'Inajadili',reviewing:'Inakagua',completed:'Imekamilika',failed:'Imeshindwa',cancelled:'Imesimamishwa',partial_result:'Matokeo sehemu',hist:'Historia',clear:'Futa historia yote',set:'Mipangilio',lang:'Lugha',theme:'Mwonekano',depth:'Kina cha mjadala',short:'Mfupi',deep:'Wa kina',nokey:'Weka Tavily API key kwenye Mipangilio ili kuanza.',nm:'↓ Ujumbe mpya',sn:'Funguo huhifadhiwa kwenye kivinjari chako tu (localStorage). Usiweke key ya siri kwenye repo ya umma.',noresp:'(hakuna jibu)',emp:'Hakuna mjadala bado.'},
- en:{sub:'Three-AI debate • Tavily',ph:'Type your question…',idle:'Ready',analyzing:'Analyzing',debating:'Debating',reviewing:'Reviewing',completed:'Completed',failed:'Failed',cancelled:'Stopped',partial_result:'Partial result',hist:'History',clear:'Clear all history',set:'Settings',lang:'Language',theme:'Theme',depth:'Debate depth',short:'Short',deep:'Deep',nokey:'Add a Tavily API key in Settings to start.',nm:'↓ New message',sn:'The key is stored only in your browser (localStorage). Never put a secret key in a public repo.',noresp:'(no answer)',emp:'No debates yet.'}};
-let S=JSON.parse(localStorage.getItem('trin_s')||'{}');S={key:'',worker:'',lang:'sw',theme:'dark',depth:'short',...S};
-const TAVILY_KEY='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';
-if(!S.key)S.key=TAVILY_KEY;
-let H=[];try{H=JSON.parse(localStorage.getItem('trin_h')||'[]')}catch(e){}
-let cur=null,ctl=null,busy=false;
-const t=k=>T[S.lang][k];
-const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const saveS=()=>localStorage.setItem('trin_s',JSON.stringify(S));
-const saveH=()=>{try{localStorage.setItem('trin_h',JSON.stringify(H.slice(0,50)))}catch(e){}};
-
-function ui(){
- document.documentElement.dataset.theme=S.theme;document.documentElement.lang=S.lang;
- $('sub').textContent=t('sub');$('q').placeholder=t('ph');$('hT').textContent=t('hist');$('clr').textContent=t('clear');
- $('sT').textContent=t('set');$('lL').textContent=t('lang');$('tL').textContent=t('theme');$('dL').textContent=t('depth');
- $('dp').options[0].text=t('short');$('dp').options[1].text=t('deep');$('sn').textContent=t('sn');$('nm').textContent=t('nm');
- $('who').innerHTML=Object.entries(AI).map(([k,a])=>`<div class="chip" id="c-${k}" style="color:${a.c}"><i style="background:${a.c}"></i><span style="color:var(--t)"><b>${a.n}</b> <small>${a.r}</small></span></div>`).join('');
- status(cur?.status||'idle');renderHist();
-}
-function status(s){if(cur)cur.status=s;$('st').textContent=t(s)||s;$('st').style.color=s==='failed'?'var(--err)':s==='completed'?'var(--ok)':'var(--m)'}
-function light(k){document.querySelectorAll('.chip').forEach(c=>c.classList.toggle('on',c.id==='c-'+k))}
-
-const feed=$('feed');
-const atBottom=()=>feed.scrollHeight-feed.scrollTop-feed.clientHeight<80;
-function post(node){const b=atBottom();feed.appendChild(node);if(b)feed.scrollTop=feed.scrollHeight;else $('nm').style.display='block'}
-feed.addEventListener('scroll',()=>{if(atBottom())$('nm').style.display='none'});
-$('nm').onclick=()=>{feed.scrollTop=feed.scrollHeight};
-
-function srcHtml(s){return s&&s.length?`<div class="src">${s.map(x=>`<a href="${esc(x.url)}" target="_blank" rel="noopener noreferrer">↗ ${esc(x.title||x.url)}</a>`).join('')}</div>`:''}
-function bubble(m){
- const d=document.createElement('div');
- if(m.who==='user'){d.className='msg me';d.innerHTML=`<div class="bd"><div class="tx">${esc(m.text)}</div></div>`;return d}
- const a=AI[m.who];d.className='msg';
- d.innerHTML=`<div class="av" style="background:${a.c}">${a.a}</div><div class="bd"><div class="hd"><b>${a.n}</b> · ${a.r}<span class="tag" style="color:${a.c}">${esc(m.type)}</span></div><div class="tx">${esc(m.text)}</div>${srcHtml(m.sources)}</div>`;
- return d;
-}
-function add(who,type,text,sources){
- document.querySelectorAll('.typ').forEach(e=>e.remove());
- const m={id:crypto.randomUUID(),who,type,text,sources:sources||[],ts:Date.now()};
- cur.msgs.push(m);post(bubble(m));saveCur();return m;
-}
-function typing(txt,who){
- document.querySelectorAll('.typ').forEach(e=>e.remove());light(who);
- const d=document.createElement('div');d.className='typ';d.textContent=txt;post(d);
-}
-function saveCur(){const i=H.findIndex(h=>h.id===cur.id);if(i<0)H.unshift(cur);saveH();renderHist()}
-
-async function tav(q,o,sig){
- const r=await fetch('https://api.tavily.com/search',{method:'POST',signal:sig,
-  headers:{'Content-Type':'application/json',Authorization:'Bearer '+S.key},
-  body:JSON.stringify({query:q.slice(0,390),search_depth:o.depth,include_answer:o.depth==='advanced'?'advanced':'basic',max_results:o.n,topic:o.topic||'general'})});
- if(!r.ok){let e='';try{e=(await r.json()).detail?.error||''}catch(_){}throw new Error('HTTP '+r.status+(e?' — '+e:''))}
- return r.json();
-}
-async function tryTav(who,q,o){
- for(let i=0;i<2;i++){
-  try{return await tav(q,o,ctl.signal)}catch(e){
-   if(ctl.signal.aborted)throw e;
-   if(/HTTP 40[01]/.test(e.message)||i===1){add(who,'Hitilafu','Huduma imeshindwa: '+e.message+(/40[01]/.test(e.message)?' (angalia API key)':''));cur.errors=(cur.errors||0)+1;return null}
-   await new Promise(r=>setTimeout(r,1200));
-  }
- }
-}
-const dom=u=>{try{return new URL(u).hostname.replace(/^www\./,'')}catch(e){return u}};
-const toSrc=r=>(r?.results||[]).map(x=>({title:x.title,url:x.url}));
-
-async function runLegacy(q){
- busy=true;ctl=new AbortController();
- cur={id:crypto.randomUUID(),title:q.slice(0,60),q,ts:Date.now(),status:'idle',msgs:[],errors:0};
- feed.innerHTML='';$('stop').style.display='';$('go').disabled=true;
- add('user','',q);
- try{
-  status('analyzing');
-  typing('Sade anachambua swali...','sade');await new Promise(r=>setTimeout(r,500));
-  const deep=S.depth==='deep';
-  add('sade','Uchambuzi',`Nimepokea swali. Mpango: R-AI Fire atachunguza upande wa kiufundi, hatari na changamoto; R-AI Search atatafuta ushahidi na vyanzo vya sasa.${deep?' Mjadala wa kina: kutakuwa na mzunguko wa pili wa pingamizi na uthibitisho.':''}\n\nKumbuka: AI zote tatu zinatumia Tavily (utafutaji + muhtasari wa jibu), si modeli tatu tofauti za lugha.`);
-  status('debating');
-  typing('R-AI Fire inaandaa uchambuzi...','fire');
-  const fire=await tryTav('fire',q+' technical requirements limitations risks',{depth:'basic',n:4});
-  if(fire)add('fire','Uchambuzi',fire.answer||t('noresp'),toSrc(fire));
-  typing('R-AI Search inathibitisha taarifa...','search');
-  const sr=await tryTav('search',q,{depth:'advanced',n:6});
-  if(sr)add('search','Ushahidi',sr.answer||t('noresp'),toSrc(sr));
-  let fire2=null,sr2=null;
-  if(deep){
-   typing('Sade anaandaa pingamizi...','sade');await new Promise(r=>setTimeout(r,400));
-   add('sade','Swali','Fire, ni makosa au mitego gani ya kawaida yanayowapata watu kwenye hili? Search, je, kuna taarifa mpya zaidi za mwaka huu?');
-   typing('R-AI Fire inaandaa uchambuzi...','fire');
-   fire2=await tryTav('fire',q+' common mistakes problems',{depth:'basic',n:4});
-   if(fire2)add('fire','Pingamizi',fire2.answer||t('noresp'),toSrc(fire2));
-   typing('R-AI Search inathibitisha taarifa...','search');
-   sr2=await tryTav('search',q+' latest 2026',{depth:'basic',n:4,topic:'news'});
-   if(sr2)add('search','Marekebisho',sr2.answer||t('noresp'),toSrc(sr2));
-  }
-  status('reviewing');
-  typing('Sade anakagua ubora wa majibu...','sade');await new Promise(r=>setTimeout(r,500));
-  const A=[fire,fire2].filter(Boolean),B=[sr,sr2].filter(Boolean);
-  if(!A.length&&!B.length){status('failed');document.querySelectorAll('.typ').forEach(e=>e.remove());light('');throw 'none'}
-  const da=new Set(A.flatMap(x=>(x.results||[]).map(r=>dom(r.url)))),db=new Set(B.flatMap(x=>(x.results||[]).map(r=>dom(r.url))));
-  const shared=[...da].filter(x=>db.has(x));
-  const rev=`Ukaguzi: Fire alipata vyanzo ${da.size}, Search alipata ${db.size}. `+(shared.length?`Vyanzo vinavyoshirikiana: ${shared.join(', ')} — hii inaongeza uzito wa makubaliano.`:'Hakuna chanzo kinachoshirikiana kati yao, kwa hiyo makubaliano yana uthibitisho mdogo; soma vyanzo mwenyewe.')+(cur.errors?` Huduma ${cur.errors} zilishindwa, jibu ni la sehemu.`:'');
-  add('sade','Hitimisho',rev);
-  const all=new Map();[...A,...B].forEach(x=>(x.results||[]).forEach(r=>all.set(r.url,{title:r.title,url:r.url})));
-  cur.final={main:(sr?.answer||fire?.answer||'').trim(),tech:(fire?.answer||'').trim(),late:(sr2?.answer||'').trim(),review:rev,shared,sources:[...all.values()]};
-  renderFinal(cur.final);
-  status(cur.errors?'partial_result':'completed');light('');
- }catch(e){
-  document.querySelectorAll('.typ').forEach(x=>x.remove());light('');
-  if(ctl.signal.aborted){status('cancelled');add('sade','Hitimisho','Mjadala umesimamishwa na mtumiaji.')}
-  else if(e!=='none'){status('failed');add('sade','Hitilafu','Hitilafu: '+(e.message||e))}
-  else add('sade','Hitilafu','Huduma zote zimeshindwa. Angalia mtandao au API key kwenye Mipangilio.');
- }
- busy=false;$('stop').style.display='none';$('go').disabled=false;saveCur();
-}
-
-async function W(path,body){
- for(let i=0;i<2;i++){
-  try{const r=await fetch(S.worker+path,{method:'POST',signal:ctl.signal,headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
-   const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error('HTTP '+r.status+(d.error?' — '+d.error:''));return d}
-  catch(e){if(ctl.signal.aborted)throw e;if(i===1||/HTTP 40[0-3]/.test(e.message))throw e;await new Promise(r=>setTimeout(r,1200))}
- }
-}
-const ctxOf=rs=>'<data>\n'+(rs||[]).map((r,i)=>`[${i+1}] ${r.title} (${r.url})\n${r.content}`).join('\n\n')+'\n</data>';
-const cut=(x,n=1400)=>String(x||'').slice(0,n);
-async function runBrain(q){
- busy=true;ctl=new AbortController();
- cur={id:crypto.randomUUID(),title:q.slice(0,60),q,ts:Date.now(),status:'idle',msgs:[],errors:0};
- feed.innerHTML='';$('stop').style.display='';$('go').disabled=false;$('go').disabled=true;
- add('user','',q);
- const deep=S.depth==='deep',used=new Map();
- const llm=async(who,prompt)=>{try{return (await W('/llm',{role:who,prompt})).text||''}catch(e){if(ctl.signal.aborted)throw e;cur.errors++;add(who,'Hitilafu','LLM imeshindwa: '+e.message);return null}};
- const srch=async(who,query,o)=>{try{const rs=(await W('/search',{q:query,...o})).results||[];rs.forEach(r=>used.set(r.url,{title:r.title,url:r.url}));return rs}catch(e){if(ctl.signal.aborted)throw e;cur.errors++;add(who,'Hitilafu','Utafutaji umeshindwa: '+e.message);return []}};
- try{
-  status('analyzing');typing('Sade anachambua swali...','sade');
-  const plan=await llm('sade',`Swali la mtumiaji: ${q}\n\nToa uchambuzi wa awali kwa sentensi 3-5: lengo halisi, vipengele vya kuchunguza, na kazi ya R-AI Fire (kiufundi/hatari) na R-AI Search (ushahidi/vyanzo).`);
-  if(plan)add('sade','Uchambuzi',plan);
-  status('debating');typing('R-AI Fire inaandaa uchambuzi...','fire');
-  const fr=await srch('fire',q+' technical requirements limitations risks',{depth:'basic',n:4});
-  const fire=await llm('fire',`Swali: ${q}\n\nMpango wa Sade: ${cut(plan,800)}\n\nVyanzo:\n${ctxOf(fr)}\n\nToa uchambuzi wa kiufundi: utekelezekaji, hatua, hatari na mapungufu.`);
-  if(fire)add('fire','Uchambuzi',fire,fr.map(r=>({title:r.title,url:r.url})));
-  typing('R-AI Search inathibitisha taarifa...','search');
-  const sr=await srch('search',q,{depth:'advanced',n:6});
-  const se=await llm('search',`Swali: ${q}\n\nMadai ya Fire: ${cut(fire,900)}\n\nVyanzo:\n${ctxOf(sr)}\n\nThibitisha au pinga madai ya Fire kwa ushahidi, na toa jibu la ushahidi kwa swali.`);
-  if(se)add('search','Ushahidi',se,sr.map(r=>({title:r.title,url:r.url})));
-  typing('Sade anakagua hoja...','sade');
-  const crit=await llm('sade',`Swali: ${q}\n\nFire: ${cut(fire)}\n\nSearch: ${cut(se)}\n\nOnyesha makubaliano na tofauti. Pinga hoja dhaifu au zisizo na ushahidi. Uliza swali moja kali kwa Fire na moja kwa Search.`);
-  if(crit)add('sade','Pingamizi',crit);
-  let f2=null,s2=null;
-  if(deep&&crit){
-   typing('R-AI Fire inaandaa uchambuzi...','fire');
-   f2=await llm('fire',`Swali: ${q}\n\nSade amepinga: ${cut(crit)}\n\nVyanzo:\n${ctxOf(fr)}\n\nJibu swali lako kwa hoja; rekebisha msimamo kama ushahidi unahitaji.`);
-   if(f2)add('fire','Marekebisho',f2);
-   typing('R-AI Search inathibitisha taarifa...','search');
-   const nr=await srch('search',q+' latest 2026',{depth:'basic',n:4,topic:'news'});
-   s2=await llm('search',`Swali: ${q}\n\nSade amepinga: ${cut(crit)}\n\nVyanzo vipya:\n${ctxOf(nr)}\n\nJibu swali lako na taja kama taarifa mpya zinabadilisha jibu.`);
-   if(s2)add('search','Marekebisho',s2,nr.map(r=>({title:r.title,url:r.url})));
-  }
-  status('reviewing');typing('Sade anakagua ubora wa majibu...','sade');
-  if(!fire&&!se)throw 'none';
-  const fin=await llm('sade',`Swali: ${q}\n\nFire: ${cut(fire,1000)} ${cut(f2,600)}\n\nSearch: ${cut(se,1000)} ${cut(s2,600)}\n\nUkaguzi: Toa HITIMISHO KUU, makubaliano, maoni yanayotofautiana (kama yapo), hatua za kutekeleza, na tahadhari. Ushahidi bora una uzito kuliko idadi ya AI zinazokubaliana.`);
-  if(!fin)throw 'none';
-  const dm=a=>new Set((a||[]).map(r=>dom(r.url)));const sh=[...dm(fr)].filter(x=>dm(sr).has(x));
-  const rev=`Fire alitumia vyanzo ${fr.length}, Search ${sr.length}.`+(sh.length?` Vyanzo vinavyoshirikiana: ${sh.join(', ')}.`:' Hakuna chanzo kinachoshirikiana; hakiki vyanzo mwenyewe.')+(cur.errors?` Huduma ${cur.errors} zilishindwa, jibu ni la sehemu.`:'');
-  add('sade','Hitimisho','Ukaguzi umekamilika. '+rev);
-  cur.final={main:fin.trim(),tech:'',late:'',review:rev,shared:sh,sources:[...used.values()]};
-  renderFinal(cur.final);status(cur.errors?'partial_result':'completed');light('');
- }catch(e){
-  document.querySelectorAll('.typ').forEach(x=>x.remove());light('');
-  if(ctl.signal.aborted){status('cancelled');add('sade','Hitimisho','Mjadala umesimamishwa na mtumiaji.')}
-  else{status('failed');add('sade','Hitilafu',e==='none'?'Huduma zimeshindwa. Angalia Backend URL na variables za Worker.':'Hitilafu: '+(e.message||e))}
- }
- busy=false;$('stop').style.display='none';$('go').disabled=false;saveCur();
-}
-const run=q=>S.worker?runBrain(q):runLegacy(q);
-function finText(f){return `${f.main}\n\n${f.tech&&f.tech!==f.main?'Mtazamo wa kiufundi (Fire): '+f.tech+'\n\n':''}${f.late?'Taarifa mpya (Search): '+f.late+'\n\n':''}${f.review}\n\nVyanzo:\n${f.sources.map(s=>s.url).join('\n')}\n\nR-AI TRINITY — Jibu la pamoja limekamilika.`}
-function renderFinal(f){
- const d=document.createElement('div');d.className='fin';
- d.innerHTML=`<h2>Jibu la Mwisho — Sade</h2><div class="tx">${esc(f.main)}</div>
- ${f.tech&&f.tech!==f.main?`<h4>Mtazamo wa kiufundi (R-AI Fire)</h4><div class="tx">${esc(f.tech)}</div>`:''}
- ${f.late?`<h4>Taarifa mpya (R-AI Search)</h4><div class="tx">${esc(f.late)}</div>`:''}
- <h4>Makubaliano na tofauti</h4><div class="tx">${esc(f.review)}</div>
- <h4>Vyanzo</h4>${srcHtml(f.sources)}
- <div class="note"><b>R-AI TRINITY — Jibu la pamoja limekamilika.</b> Makubaliano ya AI hayathibitishi usahihi; hakiki vyanzo, hasa kwa afya, sheria, fedha na usalama.</div>
- <div class="row"><button class="pri" data-a="cp">Nakili</button><button data-a="sh">Shiriki</button><button data-a="co">Endelea na mjadala</button><button data-a="fu">Swali la nyongeza</button></div>`;
- d.onclick=async e=>{const a=e.target.dataset.a;if(!a)return;
-  if(a==='cp'){try{await navigator.clipboard.writeText(finText(f));e.target.textContent='✓'}catch(_){}}
-  if(a==='sh'){if(navigator.share)navigator.share({title:'R-AI TRINITY',text:finText(f)}).catch(()=>{});else{try{await navigator.clipboard.writeText(finText(f));e.target.textContent='✓'}catch(_){}}}
-  if(a==='co'){$('q').value='Endelea na mjadala: toa maelezo zaidi kuhusu: '+cur.q;$('q').focus()}
-  if(a==='fu'){$('q').focus()}};
- post(d);
-}
-function renderHist(){
- $('hb').style.display=innerWidth<900?'':'none';
- $('hl').innerHTML=H.length?H.map(h=>`<button class="hi" data-id="${h.id}">${esc(h.title)}<small>${new Date(h.ts).toLocaleString()} · ${esc(t(h.status)||h.status)}</small></button>`).join(''):`<div class="note">${t('emp')}</div>`;
-}
-$('hl').onclick=e=>{const b=e.target.closest('[data-id]');if(!b||busy)return;openH(b.dataset.id);$('side').style.display=''};
-function openH(id){const h=H.find(x=>x.id===id);if(!h)return;cur=h;feed.innerHTML='';h.msgs.forEach(m=>feed.appendChild(bubble(m)));if(h.final)renderFinal(h.final);status(h.status);feed.scrollTop=feed.scrollHeight}
-$('hb').onclick=()=>{const s=$('side');s.style.display=s.style.display==='block'?'':'block';s.style.position='absolute';s.style.zIndex=5;s.style.height='calc(100% - 55px)';s.style.top='55px'};
-$('clr').onclick=()=>{if(confirm('?')){H=[];saveH();renderHist();}};
-$('nw').onclick=()=>{if(busy)return;cur=null;feed.innerHTML='';status('idle');$('q').focus()};
-$('stop').onclick=()=>ctl&&ctl.abort();
-
-function send(){
- const q=$('q').value.trim();if(!q||busy)return;
- if(!S.key&&!S.worker){openSet();alert(t('nokey'));return}
- $('q').value='';$('q').style.height='';localStorage.removeItem('trin_d');run(q);
-}
-$('f').onsubmit=e=>{e.preventDefault();send()};
-$('q').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&innerWidth>=900){e.preventDefault();send()}});
-$('q').addEventListener('input',e=>{e.target.style.height='auto';e.target.style.height=e.target.scrollHeight+'px';localStorage.setItem('trin_d',e.target.value)});
-
-function openSet(){$('k').value=S.key;$('wk').value=S.worker||'';$('l').value=S.lang;$('th').value=S.theme;$('dp').value=S.depth;
- $('svc').textContent=S.worker?'Backend (LLM + Tavily): imewekwa':S.key?'Tavily: key imewekwa (haijajaribiwa hadi swali litumwe)':'Tavily: haijaunganishwa — utafutaji haupatikani';$('dg').showModal()}
-$('sb').onclick=openSet;
-$('df').onsubmit=()=>{S.key=$('k').value.trim();S.worker=$('wk').value.trim().replace(/\/$/,'');S.lang=$('l').value;S.theme=$('th').value;S.depth=$('dp').value;saveS();ui()};
-addEventListener('online',()=>{});addEventListener('offline',()=>{if(busy)add('sade','Hitilafu','Mtandao umekatika. Utajaribu tena ukirudi.')});
-addEventListener('resize',renderHist);
-$('q').value=localStorage.getItem('trin_d')||'';
-ui();
 </script>
 </body>
 </html>
