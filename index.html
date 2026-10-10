@@ -78,7 +78,7 @@ dialog input,dialog select{width:100%;font:inherit;padding:8px;border-radius:8px
 <dialog id="dg"><form method="dialog" id="df">
  <h3 style="margin:0 0 4px" id="sT"></h3>
  <label>Tavily API key</label><input id="k" type="password" autocomplete="off" placeholder="tvly-...">
- <label id="lL"></label><select id="l"><option value="sw">Kiswahili</option><option value="en">English</option></select>
+ <label>Backend URL (Worker) — ubongo wa LLM</label><input id="wk" placeholder="https://xxx.workers.dev"><label id="lL"></label><select id="l"><option value="sw">Kiswahili</option><option value="en">English</option></select>
  <label id="tL"></label><select id="th"><option value="dark">Dark</option><option value="light">Light</option></select>
  <label id="dL"></label><select id="dp"><option value="short"></option><option value="deep"></option></select>
  <label>Hali ya huduma</label><div id="svc" class="note" style="margin:0"></div>
@@ -95,7 +95,9 @@ const AI={
 };
 const T={sw:{sub:'Mjadala wa AI tatu • Tavily',ph:'Andika swali lako…',idle:'Tayari',analyzing:'Inachambua',debating:'Inajadili',reviewing:'Inakagua',completed:'Imekamilika',failed:'Imeshindwa',cancelled:'Imesimamishwa',partial_result:'Matokeo sehemu',hist:'Historia',clear:'Futa historia yote',set:'Mipangilio',lang:'Lugha',theme:'Mwonekano',depth:'Kina cha mjadala',short:'Mfupi',deep:'Wa kina',nokey:'Weka Tavily API key kwenye Mipangilio ili kuanza.',nm:'↓ Ujumbe mpya',sn:'Funguo huhifadhiwa kwenye kivinjari chako tu (localStorage). Usiweke key ya siri kwenye repo ya umma.',noresp:'(hakuna jibu)',emp:'Hakuna mjadala bado.'},
  en:{sub:'Three-AI debate • Tavily',ph:'Type your question…',idle:'Ready',analyzing:'Analyzing',debating:'Debating',reviewing:'Reviewing',completed:'Completed',failed:'Failed',cancelled:'Stopped',partial_result:'Partial result',hist:'History',clear:'Clear all history',set:'Settings',lang:'Language',theme:'Theme',depth:'Debate depth',short:'Short',deep:'Deep',nokey:'Add a Tavily API key in Settings to start.',nm:'↓ New message',sn:'The key is stored only in your browser (localStorage). Never put a secret key in a public repo.',noresp:'(no answer)',emp:'No debates yet.'}};
-let S=JSON.parse(localStorage.getItem('trin_s')||'{}');S={key:'',lang:'sw',theme:'dark',depth:'short',...S};
+let S=JSON.parse(localStorage.getItem('trin_s')||'{}');S={key:'',worker:'',lang:'sw',theme:'dark',depth:'short',...S};
+const TAVILY_KEY='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';
+if(!S.key)S.key=TAVILY_KEY;
 let H=[];try{H=JSON.parse(localStorage.getItem('trin_h')||'[]')}catch(e){}
 let cur=null,ctl=null,busy=false;
 const t=k=>T[S.lang][k];
@@ -158,7 +160,7 @@ async function tryTav(who,q,o){
 const dom=u=>{try{return new URL(u).hostname.replace(/^www\./,'')}catch(e){return u}};
 const toSrc=r=>(r?.results||[]).map(x=>({title:x.title,url:x.url}));
 
-async function run(q){
+async function runLegacy(q){
  busy=true;ctl=new AbortController();
  cur={id:crypto.randomUUID(),title:q.slice(0,60),q,ts:Date.now(),status:'idle',msgs:[],errors:0};
  feed.innerHTML='';$('stop').style.display='';$('go').disabled=true;
@@ -206,6 +208,66 @@ async function run(q){
  }
  busy=false;$('stop').style.display='none';$('go').disabled=false;saveCur();
 }
+
+async function W(path,body){
+ for(let i=0;i<2;i++){
+  try{const r=await fetch(S.worker+path,{method:'POST',signal:ctl.signal,headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+   const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error('HTTP '+r.status+(d.error?' — '+d.error:''));return d}
+  catch(e){if(ctl.signal.aborted)throw e;if(i===1||/HTTP 40[0-3]/.test(e.message))throw e;await new Promise(r=>setTimeout(r,1200))}
+ }
+}
+const ctxOf=rs=>'<data>\n'+(rs||[]).map((r,i)=>`[${i+1}] ${r.title} (${r.url})\n${r.content}`).join('\n\n')+'\n</data>';
+const cut=(x,n=1400)=>String(x||'').slice(0,n);
+async function runBrain(q){
+ busy=true;ctl=new AbortController();
+ cur={id:crypto.randomUUID(),title:q.slice(0,60),q,ts:Date.now(),status:'idle',msgs:[],errors:0};
+ feed.innerHTML='';$('stop').style.display='';$('go').disabled=false;$('go').disabled=true;
+ add('user','',q);
+ const deep=S.depth==='deep',used=new Map();
+ const llm=async(who,prompt)=>{try{return (await W('/llm',{role:who,prompt})).text||''}catch(e){if(ctl.signal.aborted)throw e;cur.errors++;add(who,'Hitilafu','LLM imeshindwa: '+e.message);return null}};
+ const srch=async(who,query,o)=>{try{const rs=(await W('/search',{q:query,...o})).results||[];rs.forEach(r=>used.set(r.url,{title:r.title,url:r.url}));return rs}catch(e){if(ctl.signal.aborted)throw e;cur.errors++;add(who,'Hitilafu','Utafutaji umeshindwa: '+e.message);return []}};
+ try{
+  status('analyzing');typing('Sade anachambua swali...','sade');
+  const plan=await llm('sade',`Swali la mtumiaji: ${q}\n\nToa uchambuzi wa awali kwa sentensi 3-5: lengo halisi, vipengele vya kuchunguza, na kazi ya R-AI Fire (kiufundi/hatari) na R-AI Search (ushahidi/vyanzo).`);
+  if(plan)add('sade','Uchambuzi',plan);
+  status('debating');typing('R-AI Fire inaandaa uchambuzi...','fire');
+  const fr=await srch('fire',q+' technical requirements limitations risks',{depth:'basic',n:4});
+  const fire=await llm('fire',`Swali: ${q}\n\nMpango wa Sade: ${cut(plan,800)}\n\nVyanzo:\n${ctxOf(fr)}\n\nToa uchambuzi wa kiufundi: utekelezekaji, hatua, hatari na mapungufu.`);
+  if(fire)add('fire','Uchambuzi',fire,fr.map(r=>({title:r.title,url:r.url})));
+  typing('R-AI Search inathibitisha taarifa...','search');
+  const sr=await srch('search',q,{depth:'advanced',n:6});
+  const se=await llm('search',`Swali: ${q}\n\nMadai ya Fire: ${cut(fire,900)}\n\nVyanzo:\n${ctxOf(sr)}\n\nThibitisha au pinga madai ya Fire kwa ushahidi, na toa jibu la ushahidi kwa swali.`);
+  if(se)add('search','Ushahidi',se,sr.map(r=>({title:r.title,url:r.url})));
+  typing('Sade anakagua hoja...','sade');
+  const crit=await llm('sade',`Swali: ${q}\n\nFire: ${cut(fire)}\n\nSearch: ${cut(se)}\n\nOnyesha makubaliano na tofauti. Pinga hoja dhaifu au zisizo na ushahidi. Uliza swali moja kali kwa Fire na moja kwa Search.`);
+  if(crit)add('sade','Pingamizi',crit);
+  let f2=null,s2=null;
+  if(deep&&crit){
+   typing('R-AI Fire inaandaa uchambuzi...','fire');
+   f2=await llm('fire',`Swali: ${q}\n\nSade amepinga: ${cut(crit)}\n\nVyanzo:\n${ctxOf(fr)}\n\nJibu swali lako kwa hoja; rekebisha msimamo kama ushahidi unahitaji.`);
+   if(f2)add('fire','Marekebisho',f2);
+   typing('R-AI Search inathibitisha taarifa...','search');
+   const nr=await srch('search',q+' latest 2026',{depth:'basic',n:4,topic:'news'});
+   s2=await llm('search',`Swali: ${q}\n\nSade amepinga: ${cut(crit)}\n\nVyanzo vipya:\n${ctxOf(nr)}\n\nJibu swali lako na taja kama taarifa mpya zinabadilisha jibu.`);
+   if(s2)add('search','Marekebisho',s2,nr.map(r=>({title:r.title,url:r.url})));
+  }
+  status('reviewing');typing('Sade anakagua ubora wa majibu...','sade');
+  if(!fire&&!se)throw 'none';
+  const fin=await llm('sade',`Swali: ${q}\n\nFire: ${cut(fire,1000)} ${cut(f2,600)}\n\nSearch: ${cut(se,1000)} ${cut(s2,600)}\n\nUkaguzi: Toa HITIMISHO KUU, makubaliano, maoni yanayotofautiana (kama yapo), hatua za kutekeleza, na tahadhari. Ushahidi bora una uzito kuliko idadi ya AI zinazokubaliana.`);
+  if(!fin)throw 'none';
+  const dm=a=>new Set((a||[]).map(r=>dom(r.url)));const sh=[...dm(fr)].filter(x=>dm(sr).has(x));
+  const rev=`Fire alitumia vyanzo ${fr.length}, Search ${sr.length}.`+(sh.length?` Vyanzo vinavyoshirikiana: ${sh.join(', ')}.`:' Hakuna chanzo kinachoshirikiana; hakiki vyanzo mwenyewe.')+(cur.errors?` Huduma ${cur.errors} zilishindwa, jibu ni la sehemu.`:'');
+  add('sade','Hitimisho','Ukaguzi umekamilika. '+rev);
+  cur.final={main:fin.trim(),tech:'',late:'',review:rev,shared:sh,sources:[...used.values()]};
+  renderFinal(cur.final);status(cur.errors?'partial_result':'completed');light('');
+ }catch(e){
+  document.querySelectorAll('.typ').forEach(x=>x.remove());light('');
+  if(ctl.signal.aborted){status('cancelled');add('sade','Hitimisho','Mjadala umesimamishwa na mtumiaji.')}
+  else{status('failed');add('sade','Hitilafu',e==='none'?'Huduma zimeshindwa. Angalia Backend URL na variables za Worker.':'Hitilafu: '+(e.message||e))}
+ }
+ busy=false;$('stop').style.display='none';$('go').disabled=false;saveCur();
+}
+const run=q=>S.worker?runBrain(q):runLegacy(q);
 function finText(f){return `${f.main}\n\n${f.tech&&f.tech!==f.main?'Mtazamo wa kiufundi (Fire): '+f.tech+'\n\n':''}${f.late?'Taarifa mpya (Search): '+f.late+'\n\n':''}${f.review}\n\nVyanzo:\n${f.sources.map(s=>s.url).join('\n')}\n\nR-AI TRINITY — Jibu la pamoja limekamilika.`}
 function renderFinal(f){
  const d=document.createElement('div');d.className='fin';
@@ -236,17 +298,17 @@ $('stop').onclick=()=>ctl&&ctl.abort();
 
 function send(){
  const q=$('q').value.trim();if(!q||busy)return;
- if(!S.key){openSet();alert(t('nokey'));return}
+ if(!S.key&&!S.worker){openSet();alert(t('nokey'));return}
  $('q').value='';$('q').style.height='';localStorage.removeItem('trin_d');run(q);
 }
 $('f').onsubmit=e=>{e.preventDefault();send()};
 $('q').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&innerWidth>=900){e.preventDefault();send()}});
 $('q').addEventListener('input',e=>{e.target.style.height='auto';e.target.style.height=e.target.scrollHeight+'px';localStorage.setItem('trin_d',e.target.value)});
 
-function openSet(){$('k').value=S.key;$('l').value=S.lang;$('th').value=S.theme;$('dp').value=S.depth;
- $('svc').textContent=S.key?'Tavily: key imewekwa (haijajaribiwa hadi swali litumwe)':'Tavily: haijaunganishwa — utafutaji haupatikani';$('dg').showModal()}
+function openSet(){$('k').value=S.key;$('wk').value=S.worker||'';$('l').value=S.lang;$('th').value=S.theme;$('dp').value=S.depth;
+ $('svc').textContent=S.worker?'Backend (LLM + Tavily): imewekwa':S.key?'Tavily: key imewekwa (haijajaribiwa hadi swali litumwe)':'Tavily: haijaunganishwa — utafutaji haupatikani';$('dg').showModal()}
 $('sb').onclick=openSet;
-$('df').onsubmit=()=>{S.key=$('k').value.trim();S.lang=$('l').value;S.theme=$('th').value;S.depth=$('dp').value;saveS();ui()};
+$('df').onsubmit=()=>{S.key=$('k').value.trim();S.worker=$('wk').value.trim().replace(/\/$/,'');S.lang=$('l').value;S.theme=$('th').value;S.depth=$('dp').value;saveS();ui()};
 addEventListener('online',()=>{});addEventListener('offline',()=>{if(busy)add('sade','Hitilafu','Mtandao umekatika. Utajaribu tena ukirudi.')});
 addEventListener('resize',renderHist);
 $('q').value=localStorage.getItem('trin_d')||'';
